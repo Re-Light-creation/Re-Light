@@ -29,30 +29,24 @@
   </head>
   <body>
     <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <script src="Build/demo.loader.js"></script>
     <script>
-      (function() {
-        const timestamp = Date.now();
-        const loaderScript = document.createElement("script");
-        loaderScript.src = "Build/demo.loader.js?v=" + timestamp;
-        loaderScript.onload = () => {
-          createUnityInstance(document.querySelector("#unity-canvas"), {
-            arguments: [],
-            dataUrl: "Build/demo.data?v=" + timestamp,
-            frameworkUrl: "Build/demo.framework.js?v=" + timestamp,
-            codeUrl: "Build/demo.wasm?v=" + timestamp,
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: "Re:Light-creation",
-            productName: "Re:Light",
-            productVersion: "0.1.0",
-            devicePixelRatio: window.devicePixelRatio || 1,
-          }).then((unityInstance) => {
-          }).catch((message) => {
-            alert(message);
-          });
-        };
-        document.body.appendChild(loaderScript);
-      })();
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        arguments: [],
+        dataUrl: "Build/demo.data",
+        frameworkUrl: "Build/demo.framework.js",
+        codeUrl: "Build/demo.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Re:Light-creation",
+        productName: "Re:Light",
+        productVersion: "0.1.0",
+        devicePixelRatio: window.devicePixelRatio || 1,
+      }).then((unityInstance) => {
+      }).catch((message) => {
+        alert(message);
+      });
     </script>
   </body>
 </html>
+
 
