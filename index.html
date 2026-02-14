@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Unity Web Player | Re:Light</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+    <title>Unity Web Player | ReLight</title>
     <style>
       html, body {
         width: 100%;
@@ -13,75 +13,65 @@
         padding: 0;
         overflow: hidden;
         background-color: #231F20;
+      }
+      #unity-container {
+        width: 100%;
+        height: 100%;
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
       }
       #unity-canvas {
-        max-width: 100%;
-        max-height: 100%;
-        aspect-ratio: 16 / 9;
-        width: auto !important;
-        height: auto !important;
-        display: block;
-      }
-      #loading-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
         width: 100%;
         height: 100%;
         background: #231F20;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.5s;
-        z-index: 10;
-      }
-      .progress-bar {
-        width: 200px;
-        height: 10px;
-        background: #444;
-        border-radius: 5px;
-        margin-top: 10px;
-      }
-      .progress-fill {
-        width: 0%;
-        height: 100%;
-        background: #00bcd4;
-        border-radius: 5px;
-        transition: width 0.2s;
+        display: block;
       }
     </style>
   </head>
   <body>
-    <div id="loading-overlay">
-      <div style="color: white; font-family: sans-serif;">Loading...</div>
-      <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width="1920" height="1080" tabindex="-1"></canvas>
     </div>
-    <canvas id="unity-canvas" tabindex="-1"></canvas>
-    <script src="Build/demo.loader.js"></script>
+    <script src="Build/webgl_public.loader.js"></script>
     <script>
       const canvas = document.querySelector("#unity-canvas");
-      const loadingOverlay = document.querySelector("#loading-overlay");
-      const progressFill = document.querySelector("#progress-fill");
+      const container = document.querySelector("#unity-container");
+
+      function resizeCanvas() {
+        const targetAspect = 1920 / 1080;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const windowAspect = windowWidth / windowHeight;
+
+        if (windowAspect > targetAspect) {
+          // ウィンドウの方が横長
+          canvas.style.width = (windowHeight * targetAspect) + "px";
+          canvas.style.height = windowHeight + "px";
+        } else {
+          // ウィンドウの方が縦長（または同じ）
+          canvas.style.width = windowWidth + "px";
+          canvas.style.height = (windowWidth / targetAspect) + "px";
+        }
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
 
       createUnityInstance(canvas, {
         arguments: [],
-        dataUrl: "Build/demo.data",
-        frameworkUrl: "Build/demo.framework.js",
-        codeUrl: "Build/demo.wasm",
+        dataUrl: "Build/webgl_public.data",
+        frameworkUrl: "Build/webgl_public.framework.js",
+        codeUrl: "Build/webgl_public.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Re:Light-creation",
-        productName: "Re:Light",
+        productName: "ReLight",
         productVersion: "0.1.0",
+        // devicePixelRatioを適切に設定することで、高解像度端末での表示を鮮明にします。
         devicePixelRatio: window.devicePixelRatio || 1,
-      }, (progress) => {
-        progressFill.style.width = (100 * progress) + "%";
       }).then((unityInstance) => {
-        loadingOverlay.style.opacity = "0";
-        setTimeout(() => loadingOverlay.style.display = "none", 500);
+        // 完成後に更にリサイズが必要な場合のためのフック（Unity側の設定によります）
+        resizeCanvas();
       }).catch((message) => {
         alert(message);
       });
